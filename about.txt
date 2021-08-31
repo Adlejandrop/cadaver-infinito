@@ -1,0 +1,10 @@
+Hacer un cadaver exquisito infinito, con diseño reactivo, y con servidores en socket. 
+un posteo por ip, se puede leer la totalidad del cadaver una vez que se ha hecho un posteo. Se
+
+
+
+
+-identificar usuarios por ip. 
+-crear vistas con handlebars
+-actualizacion en tiempo real del cadaver con socket.io.
+-diseño del cadaver con bootstrap

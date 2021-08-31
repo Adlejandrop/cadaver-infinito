@@ -1,0 +1,108 @@
+<h1 class="text-center py-3">Cadaver Infinito</h1>
+<a class="d-block text-center pb-2" href="/cadaver">resultados</a>
+<div id="skullHeroSection" class="mx-auto"></div>
+
+<div class="container  py-3">
+
+
+
+
+  <div id="lastEntry" class="text-center">
+    ...{{getLastEntry entradas}}...
+
+  </div>
+</div>
+
+
+
+<form id="form" action="" class="mx-auto w-25">
+  <textarea id="textarea" rows="6" placeholder="continua acá el cadaver" maxlength="200" class="w-100" /></textarea>
+  <button class="mx-auto d-block w-100">Enviar</button>
+</form>
+<p id="counter" class="text-center">entradas realizadas esta ronda: {{leftTo10 entradas}}/10</p>
+
+
+
+<footer>
+  <p class="text-center">por @adlejandro -Alejandro Pinedo- 2021 </p>
+</footer>
+<script src="nModules/socket.io/client-dist/socket.io.js"></script>
+
+<script>
+  const socket = io();
+
+  const lastEntry = document.getElementById('lastEntry');
+  const form = document.getElementById('form');
+  const textarea = document.getElementById('textarea');
+  const counter = document.getElementById('counter');
+  console.log(counter)
+  let entriesThisRound =  {{leftTo10 entradas}}
+  console.log(entriesThisRound);
+
+
+
+  let registeredIps = "{{ips}}".split(",")
+  let ip;
+  (async () => {
+    const { data } = await axios.get("http://api.ipify.org/")
+    ip = data
+    if (registeredIps.some((i) => i === ip)) {
+      textarea.setAttribute("disabled", "true")
+      alert("Podras volver a escribir una vez que se  termine la ronda")
+    }
+  })();
+
+
+
+
+  textarea.addEventListener("focus", () => {
+    if (registeredIps.some((i) => i === ip)) {
+      textarea.setAttribute("disabled", "true")
+      alert("Podras volver a escribir una vez que se  termine la ronda")
+    }
+    if (!textarea.disabled) {
+      socket.emit('writing', textarea.value)
+
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      if (textarea.value) {
+        socket.emit('new entry', [textarea.value, ip]);
+        textarea.value = '';
+      return }
+
+      else { alert("no puedes enviar una entrada vacía.")  }
+    });
+  })
+
+  textarea.addEventListener("blur", () => {
+    console.log("blur!")
+    socket.emit('not writing', "blur!")
+  })
+
+  socket.on('last entry', function (entry) {
+    registeredIps.push(entry[1])
+    console.log(registeredIps)
+    lastEntry.innerHTML = "..." + entry[0] + "..."
+    textarea.removeAttribute("disabled")
+    textarea.value = '';
+    textarea.style.backgroundColor = "white"
+    entriesThisRound += 1
+    counter.innerHTML = `Entradas realizadas esta ronda:${entriesThisRound}/10`
+  });
+
+  socket.on('writing', (writing) => {
+    textarea.setAttribute("disabled", "true")
+    textarea.value = "espera, alguien más está escribiendo..."
+    textarea.style.backgroundColor = "grey"
+  })
+
+  socket.on("not writing", (msg) => {
+    textarea.removeAttribute("disabled")
+    textarea.value = '';
+    textarea.style.backgroundColor = "white"
+
+  })
+</script>

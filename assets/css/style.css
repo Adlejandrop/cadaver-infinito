@@ -1,0 +1,21 @@
+body{
+    background-color: #e0d9bd!important
+}
+
+#skullHeroSection{
+    background-image: url("/imgs/skull.jpg");
+    height:300px;
+    width:300px;
+    background-size: cover;
+    background-position: center;
+
+
+}
+
+#cadaverContainer{
+    height:80vh
+}
+
+footer{
+    bottom: 1px;
+}
